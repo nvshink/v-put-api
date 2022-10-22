@@ -6,7 +6,9 @@ module.exports = mongoose => {
       endDate: Date,
       endCity: String,
       planeCode: String,
-      places: Array
+      places: Array,
+      airline: String,
+      price: Number
     },
     { timestamps: true }
   );

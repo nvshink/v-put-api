@@ -13,7 +13,9 @@ exports.create = (req, res) => {
     endDate: req.body.endDate,
     endCity: req.body.endCity,
     planeCode: req.body.planeCode,
-    places: req.body.places
+    places: req.body.places,
+    airline: req.body.airline,
+    price: req.body.price,
   });
 
   flight
@@ -33,7 +35,6 @@ exports.create = (req, res) => {
 exports.findAll = (req, res) => {
   const id = req.query.id;
   var condition = id ? { id: { $regex: new RegExp(id), $options: "i" } } : {};
-
   Flight.find(condition)
     .then(data => {
       res.send(data);
@@ -126,15 +127,24 @@ exports.deleteAll = (req, res) => {
     });
 };
 
-exports.findAllPublished = (req, res) => {
-  Flight.find({ published: true })
+exports.findFlights = (req, res) => {
+  const DateLeftBoard = req.query.date;
+  const DateRightBoard = new Date(req.query.date);
+  DateRightBoard.setDate(DateRightBoard.getDate()+1);
+  DateRightBoard.setMilliseconds(DateRightBoard.getMilliseconds()-1);
+  DateRightBoard.toISOString();
+  const startCity = req.query.startCity;
+  const endCity = req.query.endCity;
+
+   Flight.find({startCity, endCity, startDate: {$gte: DateLeftBoard, $lt: DateRightBoard}})
     .then(data => {
+      console.log(data);
       res.send(data);
     })
     .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving tutorials."
+          err.message
       });
     });
 };

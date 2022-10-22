@@ -9,11 +9,13 @@ var corsOptions = {
 
 app.use(cors(corsOptions));
 
-// parse requests of content-type - application/json
 app.use(express.json());
 
-// parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
+
+// app.post("/api/search", (req, res) => {
+//   res.send(req.body.search);
+//   });
 
 const db = require("./app/models");
 db.mongoose
@@ -29,10 +31,7 @@ db.mongoose
     process.exit();
   });
 
-// simple route
-app.get("/", (req, res) => {
-  res.json({ message: "Welcome to bezkoder application." });
-});
+
 
 require("./app/routes/flight.routes")(app);
 

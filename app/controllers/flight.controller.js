@@ -1,3 +1,4 @@
+const { request } = require("express");
 const db = require("../models");
 const Flight = db.flight;
 
@@ -30,7 +31,12 @@ exports.create = (req, res) => {
       });
     });
 };
-
+exports.unicValuesColumn = (req, res) => {
+  const request = req.query.request
+  Flight.distinct(request).then(data => {
+    res.send(data);
+  })
+}
 // Retrieve all Flights from the database.
 exports.findAll = (req, res) => {
   const id = req.query.id;
@@ -135,7 +141,6 @@ exports.findFlights = (req, res) => {
   DateRightBoard.toISOString();
   const startCity = req.query.startCity;
   const endCity = req.query.endCity;
-
    Flight.find({startCity, endCity, startDate: {$gte: DateLeftBoard, $lt: DateRightBoard}})
     .then(data => {
       console.log(data);

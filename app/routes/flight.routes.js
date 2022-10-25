@@ -5,6 +5,8 @@ module.exports = app => {
 
   router.post("/", flights.create);
 
+  router.get("/search/cities", flights.unicValuesColumn);
+
   router.get("/", flights.findAll);
 
   router.get("/search", flights.findFlights);
@@ -16,6 +18,7 @@ module.exports = app => {
   router.delete("/:id", flights.delete);
 
   router.delete("/", flights.deleteAll);
+
 
   app.use("/api/flights", router);
 };

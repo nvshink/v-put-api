@@ -1,6 +1,5 @@
-const { request } = require("express");
 const db = require("../models");
-const Flight = db.flight;
+  const Flight = db.flight;
 
 exports.create = (req, res) => {
   if (!req.body.planeCode) {
@@ -79,22 +78,22 @@ exports.update = (req, res) => {
   }
 
   const id = req.params.id;
-
-  Flight.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
-    .then(data => {
-      if (!data) {
-        res.status(404).send({
-          message: `Cannot update Flight with id=${id}. Maybe Flight was not found!`
-        });
-      } else res.send({ message: "Flight was updated successfully." });
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Error updating Flight with id=" + id
+  const placeId = req.body.place - 1;
+  const placeIdStr = "places." + placeId.toString();
+  Flight.findOneAndUpdate({_id: id}, {$set: {[placeIdStr] : false}})
+  .then(data => {
+    if (!data) {
+      res.status(404).send({
+        message: `Cannot update Flight with id=${id}. Maybe Flight was not found!`
       });
+    } else res.send({ message: "Flight was updated successfully." });
+  })
+  .catch(err => {
+    res.status(500).send({
+      message: "Error updating Flight with id=" + id
     });
+  });
 };
-
 // Delete a Flight with the specified id in the request
 exports.delete = (req, res) => {
   const id = req.params.id;
@@ -136,14 +135,13 @@ exports.deleteAll = (req, res) => {
 exports.findFlights = (req, res) => {
   const DateLeftBoard = req.query.date;
   const DateRightBoard = new Date(req.query.date);
-  DateRightBoard.setDate(DateRightBoard.getDate()+1);
-  DateRightBoard.setMilliseconds(DateRightBoard.getMilliseconds()-1);
+  DateRightBoard.setDate(DateRightBoard.getDate() + 1);
+  DateRightBoard.setMilliseconds(DateRightBoard.getMilliseconds() - 1);
   DateRightBoard.toISOString();
   const startCity = req.query.startCity;
   const endCity = req.query.endCity;
-   Flight.find({startCity, endCity, startDate: {$gte: DateLeftBoard, $lt: DateRightBoard}})
+  Flight.find({ startCity, endCity, startDate: { $gte: DateLeftBoard, $lt: DateRightBoard } })
     .then(data => {
-      console.log(data);
       res.send(data);
     })
     .catch(err => {

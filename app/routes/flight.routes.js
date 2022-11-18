@@ -1,23 +1,32 @@
+const controller = require("../controllers/flight.controller.js");
+
 module.exports = app => {
-  const flights = require("../controllers/flight.controller.js");
+
+  app.use(function(req, res, next) {
+    res.header(
+      "Access-Control-Allow-Headers",
+      "x-access-token, Origin, Content-Type, Accept"
+    );
+    next();
+  });
 
   var router = require("express").Router();
 
-  router.post("/", flights.create);
+  router.post("/", controller.create);
 
-  router.get("/search/cities", flights.unicValuesColumn);
+  router.get("/search/cities", controller.unicValuesColumn);
 
-  router.get("/", flights.findAll);
+  router.get("/", controller.findAll);
 
-  router.get("/search", flights.findFlights);
+  router.get("/search", controller.findFlights);
 
-  router.get("/:id", flights.findOne);
+  router.get("/:id", controller.findOne);
 
-  router.put("/:id", flights.update);
+  router.put("/:id", controller.update);
 
-  router.delete("/:id", flights.delete);
+  router.delete("/:id", controller.delete);
 
-  router.delete("/", flights.deleteAll);
+  router.delete("/", controller.deleteAll);
 
 
   app.use("/api/flights", router);

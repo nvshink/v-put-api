@@ -20,6 +20,9 @@ module.exports = app => {
 
     router.get("/tickets/:userId", controller.findForUser);
 
+    router.post("/ticket/print/:ticketId", controller.print);
+
+    router.get("/ticket/fetch-pdf", controller.fetch);
 
     app.use("/api", router);
 };

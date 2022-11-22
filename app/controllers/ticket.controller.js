@@ -1,4 +1,5 @@
 const db = require("../models");
+const path = require("path");
 const ticketPdfTemplate = require("../documents");
 const htmlPdf = require("html-pdf");
 const Ticket = db.ticket;
@@ -20,7 +21,6 @@ exports.create = (req, res) => {
     userId: req.body.userId,
     flightId: req.body.flightId,
   });
-  console.log(ticket);
   ticket
     .save(ticket)
     .then(data => {
@@ -96,25 +96,23 @@ exports.print = (req, res) => {
       printData.number = data.number;
       Flight.findById(data.flightId)
         .then(flightData => {
-
           if (!flightData)
             res.status(404).send({ message: "Not found Flight with id" });
-          else printData.flight = flightData;
+          else {
+            printData.flight = flightData;
+            htmlPdf.create(ticketPdfTemplate.ticketTemplate(printData), {}).toFile('ticket.pdf', (err) => {
+              if (err) {
+                res.send(Promise.reject());
+              }
+              res.send(Promise.resolve());
+            });
+          }
         })
         .catch(err => {
           res
             .status(500)
             .send({ message: "Error retrieving Flight with id" });
         });
-      console.log("предкеэйт");
-      console.log(ticketPdfTemplate(flightData));
-      htmlPdf.create(ticketPdfTemplate(flightData), {}).toFile('ticket.pdf', (err, res) => {
-        if (err) {
-          res.send(Promise.reject());
-        }
-        console.log("res.filename");
-        res.send(Promise.resolve());
-      });
     })
     .catch(err => {
       res
@@ -123,5 +121,5 @@ exports.print = (req, res) => {
     });
 };
 exports.fetch = (req, res) => {
-  res.sendFile(`${__dirname}/ticket.pdf`)
+  res.sendFile(`${path.normalize(__dirname+"/../..")}/ticket.pdf`)
 };

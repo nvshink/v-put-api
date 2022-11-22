@@ -5,7 +5,8 @@ const dbConfig = require("./app/config/db.config");
 const app = express();
 
 var corsOptions = {
-  origin: "https://vput.netlify.app"
+  // origin: "https://vput.netlify.app"
+  origin: "http://localhost:8081"
 };
 
 app.use(cors(corsOptions));

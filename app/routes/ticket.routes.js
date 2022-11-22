@@ -22,7 +22,7 @@ module.exports = app => {
 
     router.post("/ticket/print/:ticketId", controller.print);
 
-    router.get("/ticket/fetch-pdf", controller.fetch);
+    router.get("/ticket/fetch/pdf", controller.fetch);
 
     app.use("/api", router);
 };

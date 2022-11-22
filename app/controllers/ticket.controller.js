@@ -9,8 +9,7 @@ const Flight = db.flight;
 
 exports.create = (req, res) => {
   if (!req.body.place) {
-    res.status(400).send({ message: "Content can not be empty!" });
-    return;
+    return res.status(400).send({ message: "Content can not be empty!" });
   }
   const ticket = new Ticket({
     place: req.body.place,
@@ -31,6 +30,7 @@ exports.create = (req, res) => {
         message:
           err.message || "Some error occurred while creating the Ticket."
       });
+      return;
     });
 };
 
@@ -46,6 +46,7 @@ exports.findAll = (req, res) => {
         message:
           err.message || "Some error occurred while retrieving tickets."
       });
+      return;
     });
 };
 
@@ -54,14 +55,19 @@ exports.findOne = (req, res) => {
 
   Ticket.findById(id)
     .then(data => {
-      if (!data)
+      if (!data){
         res.status(404).send({ message: "Not found Ticket with id " + id });
-      else res.send(data);
+        return;
+      }
+      else {
+        res.send(data);
+      }
     })
     .catch(err => {
       res
         .status(500)
         .send({ message: "Error retrieving Ticket with id=" + id });
+      return;
     });
 };
 
@@ -69,12 +75,15 @@ exports.findForUser = (req, res) => {
   const userId = req.params.userId;
   Ticket.find({ "userId": userId })
     .then(data => {
-      if (!data)
-        res.status(404).send({ message: "Not found Ticket with id " + userId });
-      else res.send(data);
+      if (!data) {
+        return res.status(404).send({ message: "Not found Ticket with id " + userId });
+      }
+      else {
+        res.send(data);
+      }
     })
     .catch(err => {
-      res
+      return res
         .status(500)
         .send({ message: "Error retrieving Ticket with id=" + userId });
     });
@@ -96,8 +105,9 @@ exports.print = (req, res) => {
       printData.number = data.number;
       Flight.findById(data.flightId)
         .then(flightData => {
-          if (!flightData)
-            res.status(404).send({ message: "Not found Flight with id" });
+          if (!flightData) {
+            return res.status(404).send({ message: "Not found Flight with id" });
+          }
           else {
             printData.flight = flightData;
             htmlPdf.create(ticketPdfTemplate.ticketTemplate(printData), {}).toFile('ticket.pdf', (err) => {
@@ -109,17 +119,17 @@ exports.print = (req, res) => {
           }
         })
         .catch(err => {
-          res
+          return res
             .status(500)
             .send({ message: "Error retrieving Flight with id" });
         });
     })
     .catch(err => {
-      res
+      return res
         .status(500)
         .send({ message: "Error retrieving Ticket with id=" + id });
     });
 };
 exports.fetch = (req, res) => {
-  res.sendFile(`${path.normalize(__dirname+"/../..")}/ticket.pdf`)
+  res.sendFile(`${path.normalize(__dirname+"/../..")}/ticket.pdf`);
 };

@@ -55,7 +55,7 @@ exports.findOne = (req, res) => {
 
   Ticket.findById(id)
     .then(data => {
-      if (!data){
+      if (!data) {
         res.status(404).send({ message: "Not found Ticket with id " + id });
         return;
       }
@@ -110,7 +110,7 @@ exports.print = (req, res) => {
           }
           else {
             printData.flight = flightData;
-            htmlPdf.create(ticketPdfTemplate.ticketTemplate(printData), {}).toFile('ticket.pdf', (err) => {
+            htmlPdf.create(ticketPdfTemplate.ticketTemplate(printData), {}).toFile(`ticket_${id}.pdf`, (err) => {
               if (err) {
                 res.send(Promise.reject());
               }
@@ -131,5 +131,6 @@ exports.print = (req, res) => {
     });
 };
 exports.fetch = (req, res) => {
-  res.sendFile(`${path.normalize(__dirname+"/../..")}/ticket.pdf`);
+  const id = req.params.ticketId;
+  res.sendFile(`${path.normalize(__dirname + "/../..")}/ticket_${id}.pdf`);
 };

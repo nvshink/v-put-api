@@ -2,10 +2,9 @@ const db = require("../models");
 const path = require("path");
 const ticketPdfTemplate = require("../documents");
 const htmlPdf = require("html-pdf");
+const { Blob } = require("buffer");
 const Ticket = db.ticket;
 const Flight = db.flight;
-
-
 
 exports.create = (req, res) => {
   if (!req.body.place) {
@@ -110,7 +109,7 @@ exports.print = (req, res) => {
           }
           else {
             printData.flight = flightData;
-            htmlPdf.create(ticketPdfTemplate.ticketTemplate(printData), {}).toFile(`ticket_${id}.pdf`, (err) => {
+            htmlPdf.create(ticketPdfTemplate.ticketTemplate(printData), {}).toFile(`ticket.pdf`, (err) => {
               if (err) {
                 res.send(Promise.reject());
               }
@@ -131,6 +130,5 @@ exports.print = (req, res) => {
     });
 };
 exports.fetch = (req, res) => {
-  const id = req.params.ticketId;
-  res.sendFile(`${path.normalize(__dirname + "/../..")}/ticket_${id}.pdf`);
+  res.sendFile(`${path.normalize(__dirname + "/../..")}/ticket.pdf`);
 };

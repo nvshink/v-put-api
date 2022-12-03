@@ -21,7 +21,8 @@
     "html-pdf": "^3.0.1",
     "jsonwebtoken": "^8.5.1",
     "jspdf": "^2.5.1",
-    "mongoose": "^6.4.2"
+    "mongoose": "^6.4.2",
+    "multer": "^1.4.5-lts.1"
   },
   "engines": {
     "node": "16.x.x",

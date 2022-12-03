@@ -52,6 +52,26 @@ exports.findAll = (req, res) => {
     });
 };
 
+exports.findSome = (req, res) => {
+  var request = req.body;
+  console.log(req.body)
+  var ids = [];
+  for (var i = 0; i < request.lenght; i++) {
+    ids.push("_id: " + request[i].flightId)
+    console.log(ids[i]);
+  }
+  Flight.find({ $or: ids })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      return res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving flights."
+      });
+    });
+};
+
 // Find a single Flight with an id
 exports.findOne = (req, res) => {
   const id = req.params.id;
@@ -74,15 +94,17 @@ exports.findOne = (req, res) => {
 
 // Update a Flight by the id in the request
 exports.update = (req, res) => {
+  console.log(req.query.id);
   if (!req.body) {
     return res.status(400).send({
       message: "Data to update can not be empty!"
     });
   }
-
-  const id = req.params.id;
-  const placeId = req.body.place - 1;
+  const id = req.query.id;
+  const placeId = req.query.place - 1;
   const placeIdStr = "places." + placeId.toString();
+  console.log(id);
+  console.log(placeId);
   Flight.findOneAndUpdate({ _id: id }, { $set: { [placeIdStr]: false } })
     .then(data => {
       if (!data) {
@@ -101,8 +123,8 @@ exports.update = (req, res) => {
 // Delete a Flight with the specified id in the request
 exports.delete = (req, res) => {
   const id = req.params.id;
-
-  Flight.findByIdAndRemove(id, { useFindAndModify: false })
+  console.log(id);
+  Flight.deleteOne({ "_id": id })
     .then(data => {
       if (!data) {
         return res.status(404).send({

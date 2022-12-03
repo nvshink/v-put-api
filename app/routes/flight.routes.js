@@ -21,9 +21,11 @@ module.exports = app => {
 
   router.get("/search", controller.findFlights);
 
+  router.get("/some/s", controller.findSome);
+
   router.get("/:id", controller.findOne);
 
-  router.put("/:id", [authJwt.verifyToken, authJwt.isAdmin], controller.update);
+  router.put("/update", controller.update);
 
   router.delete("/:id", [authJwt.verifyToken, authJwt.isAdmin], controller.delete);
 

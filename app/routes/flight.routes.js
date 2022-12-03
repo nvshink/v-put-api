@@ -1,3 +1,4 @@
+const { authJwt } = require("../middlewares");
 const controller = require("../controllers/flight.controller.js");
 
 module.exports = app => {
@@ -12,7 +13,7 @@ module.exports = app => {
 
   var router = require("express").Router();
 
-  router.post("/", controller.create);
+  router.post("/", [authJwt.verifyToken, authJwt.isAdmin], controller.create);
 
   router.get("/search/cities", controller.unicValuesColumn);
 
@@ -20,13 +21,15 @@ module.exports = app => {
 
   router.get("/search", controller.findFlights);
 
+  router.get("/some/s", controller.findSome);
+
   router.get("/:id", controller.findOne);
 
-  router.put("/:id", controller.update);
+  router.put("/update", controller.update);
 
-  router.delete("/:id", controller.delete);
+  router.delete("/:id", [authJwt.verifyToken, authJwt.isAdmin], controller.delete);
 
-  router.delete("/", controller.deleteAll);
+  router.delete("/", [authJwt.verifyToken, authJwt.isAdmin], controller.deleteAll);
 
 
   app.use("/api/flights", router);

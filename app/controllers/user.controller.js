@@ -2,15 +2,18 @@ const db = require("../models");
 const User = db.user;
 
 exports.allAccess = (req, res) => {
-  res.status(200).send("Public Content.");
+  res.status(200).send("p-c");
+  return;
 };
 
 exports.userBoard = (req, res) => {
   res.status(200).send("User Content.");
+  return;
 };
 
 exports.adminBoard = (req, res) => {
-  res.status(200).send("Admin Content.");
+  res.status(200).send(true);
+  return;
 };
 
 exports.update = (req, res) => {
@@ -35,11 +38,15 @@ exports.update = (req, res) => {
         res.status(404).send({
           message: `Cannot update User with id=${id}. Maybe Tutorial was not found!`
         });
-      } else res.send({ message: "User was updated successfully." });
+        return;
+      } else {
+        res.send({ message: "User was updated successfully." });
+      }
     })
     .catch(err => {
       res.status(500).send({
         message: "Error updating User with id=" + id
       });
+      return;
     });
 };

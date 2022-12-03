@@ -1,5 +1,5 @@
 const db = require("../models");
-  const Flight = db.flight;
+const Flight = db.flight;
 
 exports.create = (req, res) => {
   if (!req.body.planeCode) {
@@ -24,7 +24,7 @@ exports.create = (req, res) => {
       res.send(data);
     })
     .catch(err => {
-      res.status(500).send({
+      return res.status(500).send({
         message:
           err.message || "Some error occurred while creating the Flight."
       });
@@ -45,7 +45,27 @@ exports.findAll = (req, res) => {
       res.send(data);
     })
     .catch(err => {
-      res.status(500).send({
+      return res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving flights."
+      });
+    });
+};
+
+exports.findSome = (req, res) => {
+  var request = req.body;
+  console.log(req.body)
+  var ids = [];
+  for (var i = 0; i < request.lenght; i++) {
+    ids.push("_id: " + request[i].flightId)
+    console.log(ids[i]);
+  }
+  Flight.find({ $or: ids })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      return res.status(500).send({
         message:
           err.message || "Some error occurred while retrieving flights."
       });
@@ -58,12 +78,15 @@ exports.findOne = (req, res) => {
 
   Flight.findById(id)
     .then(data => {
-      if (!data)
-        res.status(404).send({ message: "Not found Flight with id " + id });
-      else res.send(data);
+      if (!data) {
+        return res.status(404).send({ message: "Not found Flight with id " + id });
+      }
+      else {
+        res.send(data);
+      }
     })
     .catch(err => {
-      res
+      return res
         .status(500)
         .send({ message: "Error retrieving Flight with id=" + id });
     });
@@ -71,37 +94,40 @@ exports.findOne = (req, res) => {
 
 // Update a Flight by the id in the request
 exports.update = (req, res) => {
+  console.log(req.query.id);
   if (!req.body) {
     return res.status(400).send({
       message: "Data to update can not be empty!"
     });
   }
-
-  const id = req.params.id;
-  const placeId = req.body.place - 1;
+  const id = req.query.id;
+  const placeId = req.query.place - 1;
   const placeIdStr = "places." + placeId.toString();
-  Flight.findOneAndUpdate({_id: id}, {$set: {[placeIdStr] : false}})
-  .then(data => {
-    if (!data) {
-      res.status(404).send({
-        message: `Cannot update Flight with id=${id}. Maybe Flight was not found!`
+  console.log(id);
+  console.log(placeId);
+  Flight.findOneAndUpdate({ _id: id }, { $set: { [placeIdStr]: false } })
+    .then(data => {
+      if (!data) {
+        return res.status(404).send({
+          message: `Cannot update Flight with id=${id}. Maybe Flight was not found!`
+        });
+      } else res.send({ message: "Flight was updated successfully." });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error updating Flight with id=" + id
       });
-    } else res.send({ message: "Flight was updated successfully." });
-  })
-  .catch(err => {
-    res.status(500).send({
-      message: "Error updating Flight with id=" + id
+      return;
     });
-  });
 };
 // Delete a Flight with the specified id in the request
 exports.delete = (req, res) => {
   const id = req.params.id;
-
-  Flight.findByIdAndRemove(id, { useFindAndModify: false })
+  console.log(id);
+  Flight.deleteOne({ "_id": id })
     .then(data => {
       if (!data) {
-        res.status(404).send({
+        return res.status(404).send({
           message: `Cannot delete Flight with id=${id}. Maybe Flight was not found!`
         });
       } else {
@@ -145,7 +171,7 @@ exports.findFlights = (req, res) => {
       res.send(data);
     })
     .catch(err => {
-      res.status(500).send({
+      return res.status(500).send({
         message:
           err.message
       });
